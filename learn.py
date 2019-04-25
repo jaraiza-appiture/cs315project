@@ -1,4 +1,5 @@
 from sklearn.tree import DecisionTreeClassifier
+from sklearn.
 from sklearn.metrics import confusion_matrix
 import numpy as np
 import matplotlib.pyplot as plt
@@ -6,6 +7,7 @@ from pandas.plotting import scatter_matrix
 import pandas as pd
 import seaborn as sns
 from confusion_matrix_pretty_print import pretty_plot_confusion_matrix
+
 sns.set(rc={'figure.figsize':(10,10)})
 
 
@@ -102,7 +104,7 @@ def confusionMatGraph(tn,fp,fn,tp):
     #colormap: see this and choose your more dear
     cmap = 'PuRd'
     pretty_plot_confusion_matrix(df_cm, cmap=cmap)
-    plt.savefig('./confusionMatrixResults.png')
+
 
 if __name__ == '__main__':
     creditcard = loadDF()
@@ -112,4 +114,4 @@ if __name__ == '__main__':
     # makeCorrelationMat()
     # makeConfusionMat()
     # getImportantFeats(creditcard)
-    confusionMatGraph(50,10,5,100)
+    # confusionMatGraph(50,10,5,100)

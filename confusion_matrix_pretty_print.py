@@ -125,7 +125,8 @@ def insert_totals(df_cm):
 #
 
 def pretty_plot_confusion_matrix(df_cm, annot=True, cmap="Oranges", fmt='.2f', fz=11,
-      lw=0.5, cbar=False, figsize=[8,8], show_null_values=0, pred_val_axis='y'):
+      lw=0.5, cbar=False, figsize=[8,8], show_null_values=0, pred_val_axis='y',
+      filepath='./confusionMatResults.png'):
     """
       print conf matrix with default layout (like matlab)
       params:
@@ -200,11 +201,13 @@ def pretty_plot_confusion_matrix(df_cm, annot=True, cmap="Oranges", fmt='.2f', f
     ax.set_xlabel(xlbl)
     ax.set_ylabel(ylbl)
     plt.tight_layout()  #set layout slim
+    plt.savefig(filepath)
     plt.show()
 #
 
 def plot_confusion_matrix_from_data(y_test, predictions, columns=None, annot=True, cmap="Oranges",
-      fmt='.2f', fz=11, lw=0.5, cbar=False, figsize=[8,8], show_null_values=0, pred_val_axis='lin'):
+      fmt='.2f', fz=11, lw=0.5, cbar=False, figsize=[8,8], show_null_values=0, pred_val_axis='lin',
+      filepath='./confusionMatResults.png'):
     """
         plot confusion matrix function with y_test (actual values) and predictions (predic),
         whitout a confusion matrix yet
@@ -226,7 +229,8 @@ def plot_confusion_matrix_from_data(y_test, predictions, columns=None, annot=Tru
     figsize=[9,9]
     show_null_values = 2
     df_cm = DataFrame(confm, index=columns, columns=columns)
-    pretty_plot_confusion_matrix(df_cm, fz=fz, cmap=cmap, figsize=figsize, show_null_values=show_null_values, pred_val_axis=pred_val_axis)
+    pretty_plot_confusion_matrix(df_cm, fz=fz, cmap=cmap, figsize=figsize, show_null_values=show_null_values, pred_val_axis=pred_val_axis,
+    filepath=filepath)
 #
 
 
