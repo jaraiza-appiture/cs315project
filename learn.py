@@ -5,10 +5,13 @@ import matplotlib.pyplot as plt
 from pandas.plotting import scatter_matrix
 import pandas as pd
 import seaborn as sns
+from confusion_matrix_pretty_print import pretty_plot_confusion_matrix
 sns.set(rc={'figure.figsize':(10,10)})
+
 
 def loadDF(filename='creditcard.csv'):
     return pd.read_csv(filename)
+
 
 def makeScatterMat(data):
 
@@ -24,6 +27,7 @@ def makeScatterMat(data):
     scatter_matrix(data[attri],figsize=(30,20))
 
     plt.savefig('./scatter_mat.png')
+
 
 def makeFeatureHistPlot(data):
 
@@ -49,7 +53,7 @@ def makeCorrelationHeatMap(data):
 
 
 
-def makeConfusionMat(y_true,y_pred):
+def confusionMatValues(y_true,y_pred):
 
     tn, fp, fn, tp = confusion_matrix(y_true, y_pred).ravel()
 
@@ -89,8 +93,16 @@ def getImportantFeats(data):
     plt.savefig('./featureImportance.png')
     plt.show()
 
-def confusionMatGraph():
-    pass
+def confusionMatGraph(tn,fp,fn,tp):
+
+    array = np.array( [[tp, fn],
+                       [fp, tn]])
+
+    df_cm = pd.DataFrame(array, index=['fraud','non-fraud'], columns=['fraud','non-fraud'])
+    #colormap: see this and choose your more dear
+    cmap = 'PuRd'
+    pretty_plot_confusion_matrix(df_cm, cmap=cmap)
+    plt.savefig('./confusionMatrixResults.png')
 
 if __name__ == '__main__':
     creditcard = loadDF()
@@ -100,3 +112,4 @@ if __name__ == '__main__':
     # makeCorrelationMat()
     # makeConfusionMat()
     # getImportantFeats(creditcard)
+    confusionMatGraph(50,10,5,100)
