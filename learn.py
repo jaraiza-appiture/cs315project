@@ -1,6 +1,8 @@
+# Classifiers
 from sklearn.tree import DecisionTreeClassifier
-from sklearn.
+from sklearn.neural_network import MLPClassifier
 from sklearn.metrics import confusion_matrix
+
 import numpy as np
 import matplotlib.pyplot as plt
 from pandas.plotting import scatter_matrix
@@ -10,6 +12,77 @@ from confusion_matrix_pretty_print import pretty_plot_confusion_matrix
 
 sns.set(rc={'figure.figsize':(10,10)})
 
+# ----------------------- Brandon -----------------
+
+# -------------------------------------------------
+
+
+# ---------------------- Jovan --------------------
+def testDecisionTree(X_train,y_train,X_test,y_test):
+
+    # Using default hyperparameter values
+    # just putting them all here to easily change them later
+    dt = DecisionTreeClassifier(criterion='gini',
+                                splitter='best',
+                                max_depth=None,
+                                min_samples_split=2,
+                                min_samples_leaf=1,
+                                min_weight_fraction_leaf=0.0,
+                                max_features=None,
+                                random_state=None,
+                                max_leaf_nodes=None,
+                                min_impurity_decrease=0.0,
+                                min_impurity_split=None,
+                                class_weight=None,
+                                presort=False)
+
+    dt.fit(X_train,y_train)
+
+    y_pred = dt.predict(X_test)
+
+    tn,fp,fn,tp = confusionMatValues(y_test,y_pred)
+
+    confusionMatGraph(tn,fp,fn,tp,'./decisionTreeConfusionMatResults.png')
+
+def testNeuralNetwork(X_train,y_train,X_test,y_test):
+
+    # Using default hyperparameter values
+    # just putting them all here to easily change them later
+    nn = MLPClassifier(hidden_layer_sizes=(100, ),
+                       activation='relu',
+                       solver='adam',
+                       alpha=0.0001,
+                       batch_size='auto',
+                       learning_rate='constant',
+                       learning_rate_init=0.001,
+                       power_t=0.5,
+                       max_iter=200,
+                       shuffle=True,
+                       random_state=None,
+                       tol=0.0001,
+                       verbose=False,
+                       warm_start=False,
+                       momentum=0.9,
+                       nesterovs_momentum=True,
+                       early_stopping=False,
+                       validation_fraction=0.1,
+                       beta_1=0.9,
+                       beta_2=0.999,
+                       epsilon=1e-08,
+                       n_iter_no_change=10)
+
+    nn.fit(X_train,y_train)
+
+    y_pred = nn.predict(y_test)
+
+    tn,fp,fn,tp = confusionMatValues(y_test,y_pred)
+
+    confusionMatGraph(tn,fp,fn,tp,'./neuralNetworkConfusionMatResults.png')
+
+# -------------------------------------------------
+
+
+#-------------------Utility Functions-----------------
 
 def loadDF(filename='creditcard.csv'):
     return pd.read_csv(filename)
@@ -95,17 +168,17 @@ def getImportantFeats(data):
     plt.savefig('./featureImportance.png')
     plt.show()
 
-def confusionMatGraph(tn,fp,fn,tp):
+def confusionMatGraph(tn,fp,fn,tp,filepath):
 
     array = np.array( [[tp, fn],
                        [fp, tn]])
 
     df_cm = pd.DataFrame(array, index=['fraud','non-fraud'], columns=['fraud','non-fraud'])
-    #colormap: see this and choose your more dear
+
     cmap = 'PuRd'
-    pretty_plot_confusion_matrix(df_cm, cmap=cmap)
+    pretty_plot_confusion_matrix(df_cm, cmap=cmap,filepath=filepath)
 
-
+# ------------------ Run program ------------------------------------
 if __name__ == '__main__':
     creditcard = loadDF()
     # makeScatterMat(creditcard)
