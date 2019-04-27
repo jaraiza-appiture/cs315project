@@ -2,6 +2,8 @@
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.neural_network import MLPClassifier
 from sklearn.metrics import confusion_matrix
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.svm import SVC 
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -13,6 +15,49 @@ from confusion_matrix_pretty_print import pretty_plot_confusion_matrix
 sns.set(rc={'figure.figsize':(10,10)})
 
 # ----------------------- Brandon -----------------
+def kNearest(X_train,y_train,X_test,y_test):
+    
+    kN = KNeighborsClassifier(n_neighbors=5,
+                              weights='uniform',
+                              algorithm='auto',
+                              leaf_size=30,
+                              p=2,
+                              metric='minkowski',
+                              metric_params=None,
+                              n_jobs=None)
+    
+    kN.fit(X_train,y_train)
+    
+    y_pred = kN.predict(X_test)
+    
+    tn,fp,fn,tp = confusionMatValues(y_test,y_pred)
+    
+    confusionMatGraph(tn,fp,fn,tp,'./KNearestConfusionMatResults.png')
+
+def KernelSVM(X_train,y_train,X_test,y_test):
+    
+    ksvm = SVC(C=1.0,
+               kernel='rbf',
+               degree=3,
+               gamma='auto_deprecated',
+               coef0=0.0,
+               shrinking=True,
+               probability=False,
+               tol=0.001,
+               cache_size=200,
+               class_weight=None,
+               verbose=False,
+               max_iter=-1,
+               decision_function_shape='ovr',
+               random_state=None)
+    
+    ksvm.fit(X_train,y_train)
+    
+    y_pred =  ksvm.predict(X_test)
+    
+    tn,fp,fn,tp = confusionMatValues(y_test,y_pred)
+    
+    confusionMatGraph(tn,fp,fn,tp,'./KernelSVMConfusionMatResults.png')
 
 # -------------------------------------------------
 
