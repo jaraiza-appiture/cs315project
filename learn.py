@@ -24,7 +24,7 @@ def kNearest(kN,X_train,y_train,X_test,y_test):
 
     tn,fp,fn,tp = confusionMatValues(y_test,y_pred)
 
-    confusionMatGraph(tn,fp,fn,tp,'./KNearestConfusionMatResults2.png')
+    confusionMatGraph(tn,fp,fn,tp,'./KNearestConfusionMatResults.png')
 
 def KernelSVM(ksvm,X_train,y_train,X_test,y_test):
 
@@ -34,7 +34,7 @@ def KernelSVM(ksvm,X_train,y_train,X_test,y_test):
 
     tn,fp,fn,tp = confusionMatValues(y_test,y_pred)
 
-    confusionMatGraph(tn,fp,fn,tp,'./KernelSVMConfusionMatResults2.png')
+    confusionMatGraph(tn,fp,fn,tp,'./KernelSVMConfusionMatResults.png')
 
 # -------------------------------------------------
 
@@ -46,7 +46,7 @@ def RandomForest(rf,X_train,y_train,X_test,y_test):
 
     tn,fp,fn,tp = confusionMatValues(y_test,y_pred)
 
-    confusionMatGraph(tn,fp,fn,tp,'./RandomForestConfusionMatResults2.png')
+    confusionMatGraph(tn,fp,fn,tp,'./BestRandomForestConfusionMatResults.png')
 
 # ---------------------- Jovan --------------------
 def testDecisionTree(dt,X_train,y_train,X_test,y_test):
@@ -60,7 +60,7 @@ def testDecisionTree(dt,X_train,y_train,X_test,y_test):
 
     tn,fp,fn,tp = confusionMatValues(y_test,y_pred)
 
-    confusionMatGraph(tn,fp,fn,tp,'./decisionTreeConfusionMatResults2.png')
+    confusionMatGraph(tn,fp,fn,tp,'./BestdecisionTreeConfusionMatResultsRR.png')
 
 def testNeuralNetwork(nn,X_train,y_train,X_test,y_test):
 
@@ -72,7 +72,7 @@ def testNeuralNetwork(nn,X_train,y_train,X_test,y_test):
 
     tn,fp,fn,tp = confusionMatValues(y_test,y_pred)
 
-    confusionMatGraph(tn,fp,fn,tp,'./neuralNetworkConfusionMatResults2.png')
+    confusionMatGraph(tn,fp,fn,tp,'./BestneuralNetworkConfusionMatResults.png')
 
 # -------------------------------------------------
 
@@ -82,11 +82,11 @@ def testEnsemble(estimators,X_train,y_train,X_test,y_test):
 
     eclf.fit(X_train,y_train)
 
-    y_pred = eclf.predict(y_test)
+    y_pred = eclf.predict(X_test)
 
     tn,fp,fn,tp = confusionMatValues(y_test,y_pred)
 
-    confusionMatGraph(tn,fp,fn,tp,'./ensembleConfusionMatResults2.png')
+    confusionMatGraph(tn,fp,fn,tp,'./BestensembleConfusionMatResults.png')
 
 #-------------------Utility Functions-----------------
 
@@ -230,7 +230,7 @@ if __name__ == '__main__':
                                 splitter='best',
                                 max_depth=3,
                                 min_samples_split=2,
-                                min_samples_leaf=1,
+                                min_samples_leaf=10,
                                 min_weight_fraction_leaf=0.0,
                                 max_features=None,
                                 random_state=42,
@@ -238,17 +238,17 @@ if __name__ == '__main__':
                                 min_impurity_decrease=0.0,
                                 min_impurity_split=None,
                                 class_weight=None,
-                                presort=True)
+                                presort=False)
 
     nn = MLPClassifier(hidden_layer_sizes=(50, ),
                        activation='relu',
                        solver='adam',
-                       alpha=0.0001,
+                       alpha=0.0005,#0.0005,
                        batch_size='auto',
                        learning_rate='constant',
                        learning_rate_init=0.001,
                        power_t=0.5,
-                       max_iter=15,
+                       max_iter=100,
                        shuffle=True,
                        random_state=13,
                        tol=0.0001,
@@ -256,7 +256,7 @@ if __name__ == '__main__':
                        warm_start=False,
                        momentum=0.9,
                        nesterovs_momentum=True,
-                       early_stopping=False,
+                       early_stopping=True,
                        validation_fraction=0.1,
                        beta_1=0.9,
                        beta_2=0.999,
@@ -264,18 +264,18 @@ if __name__ == '__main__':
 
     # Brandon Tune
     rf = RandomForestClassifier(bootstrap=True, class_weight=None, criterion='entropy',
-            max_depth=2, max_features='auto', max_leaf_nodes=None,
+            max_depth=10, max_features='auto', max_leaf_nodes=None, #10 is best max dept
             min_impurity_decrease=0.0, min_impurity_split=None,
             min_samples_leaf=1, min_samples_split=2,
-            min_weight_fraction_leaf=0.0, n_estimators=200, n_jobs=4,
+            min_weight_fraction_leaf=0.0, n_estimators=100, n_jobs=-1,
             oob_score=False, random_state=0, verbose=0, warm_start=False)
 
     #kNearest(kN,X_train,y_train,X_test,y_test)
-    #RandomForest(rf,X_train,y_train,X_test,y_test)
+    RandomForest(rf,X_train,y_train,X_test,y_test)
     #KernelSVM(ksvm,X_train,y_train,X_test,y_test)
-    #testDecisionTree(dt,X_train,y_train,X_test,y_test)
+    testDecisionTree(dt,X_train,y_train,X_test,y_test)
     testNeuralNetwork(nn,X_train,y_train,X_test,y_test)
 
-    #estimators = [('KN',kN),('SVM',ksvm),('DT',dt),('NN',nn)]
+    estimators = [('DT',dt),('NN',nn),('RF',rf)]
 
-    #testEnsemble(estimators,X_train,y_train,X_test,y_test)
+    testEnsemble(estimators,X_train,y_train,X_test,y_test)
