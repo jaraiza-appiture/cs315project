@@ -3,8 +3,9 @@ from sklearn.tree import DecisionTreeClassifier
 from sklearn.neural_network import MLPClassifier
 from sklearn.metrics import confusion_matrix
 from sklearn.neighbors import KNeighborsClassifier
-from sklearn.svm import SVC 
-
+from sklearn.svm import SVC
+from sklearn.ensemble import VotingClassifier, RandomForestClassifier
+from prep import loadData
 import numpy as np
 import matplotlib.pyplot as plt
 from pandas.plotting import scatter_matrix
@@ -15,71 +16,43 @@ from confusion_matrix_pretty_print import pretty_plot_confusion_matrix
 sns.set(rc={'figure.figsize':(10,10)})
 
 # ----------------------- Brandon -----------------
-def kNearest(X_train,y_train,X_test,y_test):
-    
-    kN = KNeighborsClassifier(n_neighbors=5,
-                              weights='uniform',
-                              algorithm='auto',
-                              leaf_size=30,
-                              p=2,
-                              metric='minkowski',
-                              metric_params=None,
-                              n_jobs=None)
-    
-    kN.fit(X_train,y_train)
-    
-    y_pred = kN.predict(X_test)
-    
-    tn,fp,fn,tp = confusionMatValues(y_test,y_pred)
-    
-    confusionMatGraph(tn,fp,fn,tp,'./KNearestConfusionMatResults.png')
+def kNearest(kN,X_train,y_train,X_test,y_test):
 
-def KernelSVM(X_train,y_train,X_test,y_test):
-    
-    ksvm = SVC(C=1.0,
-               kernel='rbf',
-               degree=3,
-               gamma='auto_deprecated',
-               coef0=0.0,
-               shrinking=True,
-               probability=False,
-               tol=0.001,
-               cache_size=200,
-               class_weight=None,
-               verbose=False,
-               max_iter=-1,
-               decision_function_shape='ovr',
-               random_state=None)
-    
-    ksvm.fit(X_train,y_train)
-    
-    y_pred =  ksvm.predict(X_test)
-    
+    kN.fit(X_train,y_train)
+
+    y_pred = kN.predict(X_test)
+
     tn,fp,fn,tp = confusionMatValues(y_test,y_pred)
-    
-    confusionMatGraph(tn,fp,fn,tp,'./KernelSVMConfusionMatResults.png')
+
+    confusionMatGraph(tn,fp,fn,tp,'./KNearestConfusionMatResults2.png')
+
+def KernelSVM(ksvm,X_train,y_train,X_test,y_test):
+
+    ksvm.fit(X_train,y_train)
+
+    y_pred =  ksvm.predict(X_test)
+
+    tn,fp,fn,tp = confusionMatValues(y_test,y_pred)
+
+    confusionMatGraph(tn,fp,fn,tp,'./KernelSVMConfusionMatResults2.png')
 
 # -------------------------------------------------
 
+def RandomForest(rf,X_train,y_train,X_test,y_test):
+
+    rf.fit(X_train,y_train)
+
+    y_pred =  rf.predict(X_test)
+
+    tn,fp,fn,tp = confusionMatValues(y_test,y_pred)
+
+    confusionMatGraph(tn,fp,fn,tp,'./RandomForestConfusionMatResults2.png')
 
 # ---------------------- Jovan --------------------
-def testDecisionTree(X_train,y_train,X_test,y_test):
+def testDecisionTree(dt,X_train,y_train,X_test,y_test):
 
     # Using default hyperparameter values
     # just putting them all here to easily change them later
-    dt = DecisionTreeClassifier(criterion='gini',
-                                splitter='best',
-                                max_depth=None,
-                                min_samples_split=2,
-                                min_samples_leaf=1,
-                                min_weight_fraction_leaf=0.0,
-                                max_features=None,
-                                random_state=None,
-                                max_leaf_nodes=None,
-                                min_impurity_decrease=0.0,
-                                min_impurity_split=None,
-                                class_weight=None,
-                                presort=False)
 
     dt.fit(X_train,y_train)
 
@@ -87,45 +60,33 @@ def testDecisionTree(X_train,y_train,X_test,y_test):
 
     tn,fp,fn,tp = confusionMatValues(y_test,y_pred)
 
-    confusionMatGraph(tn,fp,fn,tp,'./decisionTreeConfusionMatResults.png')
+    confusionMatGraph(tn,fp,fn,tp,'./decisionTreeConfusionMatResults2.png')
 
-def testNeuralNetwork(X_train,y_train,X_test,y_test):
+def testNeuralNetwork(nn,X_train,y_train,X_test,y_test):
 
     # Using default hyperparameter values
     # just putting them all here to easily change them later
-    nn = MLPClassifier(hidden_layer_sizes=(100, ),
-                       activation='relu',
-                       solver='adam',
-                       alpha=0.0001,
-                       batch_size='auto',
-                       learning_rate='constant',
-                       learning_rate_init=0.001,
-                       power_t=0.5,
-                       max_iter=200,
-                       shuffle=True,
-                       random_state=None,
-                       tol=0.0001,
-                       verbose=False,
-                       warm_start=False,
-                       momentum=0.9,
-                       nesterovs_momentum=True,
-                       early_stopping=False,
-                       validation_fraction=0.1,
-                       beta_1=0.9,
-                       beta_2=0.999,
-                       epsilon=1e-08,
-                       n_iter_no_change=10)
-
     nn.fit(X_train,y_train)
 
-    y_pred = nn.predict(y_test)
+    y_pred = nn.predict(X_test)
 
     tn,fp,fn,tp = confusionMatValues(y_test,y_pred)
 
-    confusionMatGraph(tn,fp,fn,tp,'./neuralNetworkConfusionMatResults.png')
+    confusionMatGraph(tn,fp,fn,tp,'./neuralNetworkConfusionMatResults2.png')
 
 # -------------------------------------------------
 
+def testEnsemble(estimators,X_train,y_train,X_test,y_test):
+
+    eclf = VotingClassifier(estimators, voting='hard')
+
+    eclf.fit(X_train,y_train)
+
+    y_pred = eclf.predict(y_test)
+
+    tn,fp,fn,tp = confusionMatValues(y_test,y_pred)
+
+    confusionMatGraph(tn,fp,fn,tp,'./ensembleConfusionMatResults2.png')
 
 #-------------------Utility Functions-----------------
 
@@ -151,13 +112,13 @@ def makeScatterMat(data):
 
 def makeFeatureHistPlot(data):
 
-    creditcard.hist(bins=50, figsize=(30,20),ylabelsize=5,xlabelsize=5,rwidth=5)
+    data.hist(bins=50, figsize=(30,20),ylabelsize=5,xlabelsize=5,rwidth=5)
 
     plt.savefig('./featurehistplot.png')
 
     plt.show()
 
-    return creditcard
+    return data
 
 
 def makeCorrelationHeatMap(data):
@@ -225,7 +186,7 @@ def confusionMatGraph(tn,fp,fn,tp,filepath):
 
 # ------------------ Run program ------------------------------------
 if __name__ == '__main__':
-    creditcard = loadDF()
+    # creditcard = loadDF()
     # makeScatterMat(creditcard)
     # makeCorrelationHeatMap(creditcard)
     # makeFeatureHistPlot(creditcard)
@@ -233,3 +194,88 @@ if __name__ == '__main__':
     # makeConfusionMat()
     # getImportantFeats(creditcard)
     # confusionMatGraph(50,10,5,100)
+
+    feats = ['V2','V3','Amount']
+
+    testName = 'dropFeats'
+    # Brandon Test Ratio
+    X_train, X_test, y_train, y_test = loadData()#dump=feats)
+
+    # Brandon Tune
+    kN = KNeighborsClassifier(n_neighbors=5,
+                              weights='uniform',
+                              algorithm='auto',
+                              leaf_size=30,
+                              p=2,
+                              metric='minkowski',
+                              metric_params=None,
+                              n_jobs=4)
+
+    ksvm = SVC(C=1.0,
+               kernel='linear',
+               degree=3,
+            #    gamma='scale',
+               coef0=0.0,
+               shrinking=True,
+               probability=False,
+               tol=0.001,
+               cache_size=200,
+               class_weight=None,
+               verbose=False,
+               max_iter=-1,
+               decision_function_shape='ovr',
+               random_state=42)
+
+    dt = DecisionTreeClassifier(criterion='entropy',
+                                splitter='best',
+                                max_depth=3,
+                                min_samples_split=2,
+                                min_samples_leaf=1,
+                                min_weight_fraction_leaf=0.0,
+                                max_features=None,
+                                random_state=42,
+                                max_leaf_nodes=None,
+                                min_impurity_decrease=0.0,
+                                min_impurity_split=None,
+                                class_weight=None,
+                                presort=True)
+
+    nn = MLPClassifier(hidden_layer_sizes=(50, ),
+                       activation='relu',
+                       solver='adam',
+                       alpha=0.0001,
+                       batch_size='auto',
+                       learning_rate='constant',
+                       learning_rate_init=0.001,
+                       power_t=0.5,
+                       max_iter=50,
+                       shuffle=True,
+                       random_state=None,
+                       tol=0.0001,
+                       verbose=False,
+                       warm_start=False,
+                       momentum=0.9,
+                       nesterovs_momentum=True,
+                       early_stopping=False,
+                       validation_fraction=0.1,
+                       beta_1=0.9,
+                       beta_2=0.999,
+                       epsilon=1e-08)
+
+    # Brandon Tune
+    rf = RandomForestClassifier(bootstrap=True, class_weight=None, criterion='entropy',
+            max_depth=2, max_features='auto', max_leaf_nodes=None,
+            min_impurity_decrease=0.0, min_impurity_split=None,
+            min_samples_leaf=1, min_samples_split=2,
+            min_weight_fraction_leaf=0.0, n_estimators=200, n_jobs=4,
+            oob_score=False, random_state=0, verbose=0, warm_start=False)
+
+    #kNearest(kN,X_train,y_train,X_test,y_test)
+    #RandomForest(rf,X_train,y_train,X_test,y_test)
+    #KernelSVM(ksvm,X_train,y_train,X_test,y_test)
+    #testDecisionTree(dt,X_train,y_train,X_test,y_test)
+    testNeuralNetwork(nn,X_train,y_train,X_test,y_test)
+
+    #estimators = [('KN',kN),('SVM',ksvm),('DT',dt),('NN',nn)]
+
+    #testEnsemble(estimators,X_train,y_train,X_test,y_test)
